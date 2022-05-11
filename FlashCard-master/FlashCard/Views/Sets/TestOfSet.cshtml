@@ -1,0 +1,95 @@
+@model Application.ViewModels.TestOfSetsViewModel
+
+<div class="page-inner">
+    <!-- Page Url  -->
+    <div class="page-header">
+        <h4 class="page-title">@ViewData["Page.Target"]</h4> <!-- Page Target Big -->
+        <ul class="breadcrumbs">
+            <li class="nav-home">
+                <a asp-controller="Home" asp-action="Index">
+                    <i class="fas fa-home"></i>
+                </a>
+            </li>
+            <li class="separator">
+                <i class="fas fa-angle-right"></i>
+            </li>
+            <li class="nav-item">
+                Trang
+            </li>
+            <li class="separator">
+                <i class="fas fa-angle-right"></i>
+            </li>
+            <li class="nav-item">
+                <a href="#">@ViewData["Page.Target"]</a> <!-- Page Target Small -->
+            </li>
+        </ul>
+    </div>
+
+    <!-- Page Content  -->
+	<div class="page-category">
+        <div class="card">            
+            <div class="card-body">
+                <div class="float-right" style="margin-right: 60px;">
+                    <h1 class="text-success">Đúng: <b class="text-danger" style="font-size: 3em;">@Model.CorrectCount/@Model.QuestionCount</b></h1>
+                    <h1 class="text-secondary">Điểm: <b class="text-danger" style="font-size: 3em;">@Model.Point.ToString("0.0")</b></h1>
+                </div>
+
+                <h1><b>Kiểm tra: <a href="">@Model.name</a></b></h1>
+                <input asp-for="@Model.name" class="form-control" type="text" value="@Model.name" hidden>
+                <h4>3 Câu hỏi tự luận</h4>
+                <br><br><br>
+
+                <form asp-action="TestOfSet" asp-controller="Sets" method="POST">
+                    <div asp-validation-summary="ModelOnly" class="text-danger mb-4 ml-4"></div>
+                    @if (@Model.IsFinish)
+                    {
+                        @for (int i = 0; i < @Model.question.Count(); i++)
+                        {
+                            <h2>@(i+1)) @Model.question.ElementAt(i).define</h2>
+                            <img src="@Model.question.ElementAt(i).image" alt="" width="300px" height="auto">
+                            @if (@Model.result[i])
+                            {
+                                <div class="form-group has-success">
+                                    <label for="successInput"><i class="fas fa-check"></i>&ensp;Đúng</label>
+                                    <input type="text" id="successInput" class="form-control text-success" placeholder="@Model.answer[i]" disabled>
+                                    <h5 class="text-muted mt-3">Câu trả lời: <p>@Model.question.ElementAt(i).explain</p></h5>
+                                </div>
+                            }
+                            else
+                            {
+                                <div class="form-group has-error has-feedback">
+                                    <label for="errorInput"><i class="fas fa-times"></i>&ensp;Sai</label>
+                                    <input type="text" id="errorInput" class="form-control text-danger" placeholder="@Model.answer[i]" disabled>
+                                    <h5 class="text-muted mt-3">Câu trả lời: <p>@Model.question.ElementAt(i).explain</p></h5>
+                                </div>
+                            }
+                            <br><br>
+                        }
+                    }
+                    else
+                    {
+                        @for (int i = 0; i < @Model.question.Count(); i++)
+                        {
+                            <h5>@(i+1)) @Model.question.ElementAt(i).define</h5>
+                            <img src="@Model.question.ElementAt(i).image" alt="" width="300px" height="auto">
+                            <input asp-for="@Model.answer[i]" class="form-control" type="text" value="" placeholder="Nhập đáp án...">
+                            <br><br>
+                        }
+                    }
+
+                    @if (@Model.IsFinish)
+                    {
+                        <button asp-action="TestOfSet" asp-route-id="@Context.Request.RouteValues["id"]" class="btn btn-success btn-lg btn-block mt-4">Kiểm tra lại</button>
+                    }
+                    else
+                    {
+                        <button type="submit" class="btn btn-success btn-lg btn-block mt-4">Xem đáp án</button>
+                    }
+
+                </form>
+
+            </div>
+        </div>
+        
+	</div>
+</div>
